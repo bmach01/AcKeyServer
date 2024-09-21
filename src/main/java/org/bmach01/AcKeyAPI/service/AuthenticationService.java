@@ -29,11 +29,14 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse register(User request) {
+        if(repository.findByUsername(request.getUsername()).isPresent()) {
+            return new AuthenticationResponse("User already exist");
+        }
+
         User user = new User();
         user.setId(request.getId());
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setDevice(request.getDevice());
         user.setStatus(request.getStatus());
         user.setRole(request.getRole());
 
@@ -45,6 +48,7 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(User request) {
+        // If this throws then authentication failed and controller will send out 403
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -52,7 +56,7 @@ public class AuthenticationService {
                 )
         );
 
-        User user = repository.findByUsername(request.getUsername());
+        User user = repository.findByUsername(request.getUsername()).orElseThrow();
         String token = jwtService.generateToken(user);
 
         return new AuthenticationResponse(token);

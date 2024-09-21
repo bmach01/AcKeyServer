@@ -1,7 +1,7 @@
 package org.bmach01.AcKeyAPI.domain.user;
 
-import org.bmach01.AcKeyAPI.domain.user.AccountStatus;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,9 +13,8 @@ import java.util.List;
 @Document(collection = "Users")
 public class User implements UserDetails {
     private @Id String id;
-    private String username;
+    @Indexed(unique = true) private String username;
     private String password;
-    private String device;
     private AccountStatus status;
     private Role role;
 
@@ -45,7 +44,7 @@ public class User implements UserDetails {
     }
 
     public String toString() {
-        return username + " " + id;
+        return username + " " + password;
     }
 
     public String getId() {
@@ -71,14 +70,6 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getDevice() {
-        return device;
-    }
-
-    public void setDevice(String device) {
-        this.device = device;
     }
 
     public AccountStatus getStatus() {
