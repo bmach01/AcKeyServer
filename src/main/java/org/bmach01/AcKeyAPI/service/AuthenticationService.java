@@ -26,12 +26,13 @@ public class AuthenticationService {
 
     public AuthenticationService(
             UserRepository repository,
-            ActivationCodeRepository otpRepository, PasswordEncoder passwordEncoder,
+            ActivationCodeRepository activationCodeRepository,
+            PasswordEncoder passwordEncoder,
             JwtService jwtService,
             AuthenticationManager authenticationManager
     ) {
         this.userRepository = repository;
-        this.activationCodeRepository = otpRepository;
+        this.activationCodeRepository = activationCodeRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
