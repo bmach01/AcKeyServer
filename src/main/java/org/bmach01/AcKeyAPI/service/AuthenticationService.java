@@ -4,7 +4,8 @@ package org.bmach01.AcKeyAPI.service;
 import org.bmach01.AcKeyAPI.dao.ActivationCodeRepository;
 import org.bmach01.AcKeyAPI.dao.UserRepository;
 import org.bmach01.AcKeyAPI.domain.activationCode.ActivationCode;
-import org.bmach01.AcKeyAPI.domain.response.AuthenticationResponse;
+import org.bmach01.AcKeyAPI.domain.response.LoginResponse;
+import org.bmach01.AcKeyAPI.domain.response.RegisterResponse;
 import org.bmach01.AcKeyAPI.domain.user.AccountStatus;
 import org.bmach01.AcKeyAPI.domain.user.Role;
 import org.bmach01.AcKeyAPI.domain.user.User;
@@ -20,38 +21,41 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final ActivationCodeRepository activationCodeRepository;
 
+    private final PasswordGeneratorService passwordGeneratorService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationService(
-            UserRepository repository,
+            UserRepository userRepository,
             ActivationCodeRepository activationCodeRepository,
-            PasswordEncoder passwordEncoder,
+            PasswordGeneratorService passwordGeneratorService, PasswordEncoder passwordEncoder,
             JwtService jwtService,
             AuthenticationManager authenticationManager
     ) {
-        this.userRepository = repository;
+        this.userRepository = userRepository;
         this.activationCodeRepository = activationCodeRepository;
+        this.passwordGeneratorService = passwordGeneratorService;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
     }
 
-    public AuthenticationResponse register(String request) {
+    public RegisterResponse register(String request) {
 
         ActivationCode code = activationCodeRepository.findByCode(request).orElseThrow();
 
         if (code.isUsed())
-            return new AuthenticationResponse("Invalid activation code");
+            return new RegisterResponse("Invalid activation code");
 
         User user = userRepository.findById(code.getUserId()).orElseThrow();
 
         if (user.getStatus() != AccountStatus.INACTIVE)
-            return new AuthenticationResponse("Invalid activation code");
+            return new RegisterResponse("Invalid activation code");
 
+        String password = passwordGeneratorService.generatePassword();
 
-        user.setPassword(passwordEncoder.encode("password"));
+        user.setPassword(passwordEncoder.encode(password));
         user.setStatus(AccountStatus.ACTIVE);
         user.setRole(Role.USER);
 
@@ -61,12 +65,10 @@ public class AuthenticationService {
         userRepository.save(user);
         activationCodeRepository.save(code);
 
-        String token = jwtService.generateToken(user);
-
-        return new AuthenticationResponse(token);
+        return new RegisterResponse(password);
     }
 
-    public AuthenticationResponse authenticate(User request) {
+    public LoginResponse authenticate(User request) {
         // If this throws then authentication failed and controller will send out 403
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -78,6 +80,6 @@ public class AuthenticationService {
         User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
         String token = jwtService.generateToken(user);
 
-        return new AuthenticationResponse(token);
+        return new LoginResponse(token);
     }
 }

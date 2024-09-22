@@ -1,6 +1,7 @@
 package org.bmach01.AcKeyAPI.controller;
 
-import org.bmach01.AcKeyAPI.domain.response.AuthenticationResponse;
+import org.bmach01.AcKeyAPI.domain.response.LoginResponse;
+import org.bmach01.AcKeyAPI.domain.response.RegisterResponse;
 import org.bmach01.AcKeyAPI.domain.user.User;
 import org.bmach01.AcKeyAPI.service.AuthenticationService;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +19,14 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
+    public ResponseEntity<RegisterResponse> register(
             @RequestBody String request
     ) {
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(
+    public ResponseEntity<LoginResponse> login(
             @RequestBody User request
     ) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
