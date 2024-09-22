@@ -1,5 +1,6 @@
 package org.bmach01.AcKeyAPI.domain.user;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Document(collection = "Users")
 public class User implements UserDetails {
-    private @Id String id;
+    private @Id ObjectId id;
     @Indexed(unique = true) private String username;
     private String password;
     private AccountStatus status;
@@ -48,11 +49,11 @@ public class User implements UserDetails {
     }
 
     public String getId() {
-        return id;
+        return id.toString();
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.id = new ObjectId(id);
     }
 
     public String getUsername() {

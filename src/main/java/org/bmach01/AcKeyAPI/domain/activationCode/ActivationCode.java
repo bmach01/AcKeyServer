@@ -1,5 +1,6 @@
 package org.bmach01.AcKeyAPI.domain.activationCode;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,7 +11,7 @@ import java.util.Date;
 @Document(collection = "ActivationCodes")
 public class ActivationCode {
     @Id String id;
-    @Field("user_id") String userId;
+    @Field("user_id") ObjectId userId;
     @Indexed(unique = true) String code;
     boolean used;
     @Field("valid_until")
@@ -26,11 +27,11 @@ public class ActivationCode {
     }
 
     public String getUserId() {
-        return userId;
+        return userId.toString();
     }
 
     public void setUserId(String userId) {
-        this.userId = userId;
+        this.userId = new ObjectId(userId);
     }
 
     public String getCode() {
