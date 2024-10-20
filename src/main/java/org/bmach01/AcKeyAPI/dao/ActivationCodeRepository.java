@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface ActivationCodeRepository extends MongoRepository<ActivationCode, String> {
-    Optional<ActivationCode> findByCode(String code);
+    Optional<ActivationCode> findByCodeAndUsed(String code, Boolean used);
 }

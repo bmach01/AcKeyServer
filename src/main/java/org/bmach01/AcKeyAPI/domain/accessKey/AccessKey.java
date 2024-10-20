@@ -14,7 +14,7 @@ public class AccessKey {
     String key;
     @Field("valid_until") Date validUntil;
     @Field("generated_on") Date generatedOn;
-    Date used;
+    Date usedOn;
 
     public String getId() {
         return id;
@@ -56,11 +56,11 @@ public class AccessKey {
         this.generatedOn = generatedOn;
     }
 
-    public Date getUsed() {
-        return used;
+    public Date getUsedOn() {
+        return usedOn;
     }
 
-    public void setUsed(Date used) {
-        this.used = used;
+    public void setUsedOn(Date usedOn) {
+        this.usedOn = usedOn;
     }
 }

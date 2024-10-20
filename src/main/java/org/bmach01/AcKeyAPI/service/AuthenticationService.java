@@ -43,15 +43,9 @@ public class AuthenticationService {
 
     public RegisterResponse register(String request) {
 
-        ActivationCode code = activationCodeRepository.findByCode(request).orElseThrow();
+        ActivationCode code = activationCodeRepository.findByCodeAndUsed(request, false).orElseThrow();
 
-        if (code.isUsed())
-            return new RegisterResponse("This activation code has been used already", null, null);
-
-        User user = userRepository.findById(code.getUserId()).orElseThrow();
-
-        if (user.getStatus() != AccountStatus.INACTIVE)
-            return new RegisterResponse("This activation code has been used already", null, null);
+        User user = userRepository.findByIdAndStatus(code.getUserId(), AccountStatus.INACTIVE).orElseThrow();
 
         String password = passwordGeneratorService.generatePassword();
 
@@ -65,7 +59,7 @@ public class AuthenticationService {
         userRepository.save(user);
         activationCodeRepository.save(code);
 
-        return new RegisterResponse("success", user.getUsername(), password);
+        return new RegisterResponse(user.getUsername(), password);
     }
 
     public LoginResponse authenticate(User request) {
