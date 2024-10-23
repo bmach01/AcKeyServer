@@ -14,7 +14,9 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private final String SECRET_KEY = "263534fd58f44964b81e72b8c98eebbe6e71d10c70ad11ca47de0cff819c7ea7";
+    private String getSecretKey() {
+        return System.getenv("ACKEYSERVER_JWT_SECRET_KEY");
+    }
 
     public String generateToken(User user) {
         return Jwts.builder()
@@ -26,7 +28,7 @@ public class JwtService {
     }
 
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64URL.decode(SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64URL.decode(getSecretKey());
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
